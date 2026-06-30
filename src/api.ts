@@ -44,6 +44,7 @@ api.get("/status", (c) => {
   return c.json({
     polling: isPollRunning(),
     config: {
+      provider: config.provider,
       envId: config.envId,
       gateway: config.gateway,
       image: config.image,
@@ -51,6 +52,8 @@ api.get("/status", (c) => {
       baseUrl: config.baseUrl,
       port: config.port,
       hasApiKey: !!config.apiKey,
+      hasEnvKey: !!config.envKey,
+      sandboxMode: config.sandboxMode,
     },
     sandboxes: getStats(),
   });

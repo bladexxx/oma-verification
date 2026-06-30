@@ -10,7 +10,7 @@ export const DASHBOARD_HTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMA Self-Hosted Sandbox Console</title>
+  <title>OpenMA Verification Console</title>
   <style>
     :root {
       --bg: #0d1117; --bg2: #161b22; --bg3: #1c2128; --border: #30363d;
@@ -181,7 +181,7 @@ export const DASHBOARD_HTML = `<!DOCTYPE html>
 </head>
 <body>
   <header>
-    <h1>CMA Self-Hosted Sandbox Console</h1>
+    <h1>OpenMA Verification Console</h1>
     <div class="header-right">
       <span id="poll-badge" class="status-badge off">poll: off</span>
       <span id="sandbox-count" style="font-size:11px;color:var(--muted)">sandboxes: 0</span>

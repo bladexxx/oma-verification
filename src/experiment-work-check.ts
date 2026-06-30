@@ -1,13 +1,14 @@
 import Anthropic from "@anthropic-ai/sdk";
 
 async function main(): Promise<void> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  const envId = process.env.ANTHROPIC_ENVIRONMENT_ID;
+  const apiKey = process.env.OPENMA_API_KEY ?? process.env.ANTHROPIC_API_KEY;
+  const envId = process.env.OPENMA_ENVIRONMENT_ID ?? process.env.ANTHROPIC_ENVIRONMENT_ID;
+  const baseUrl = process.env.OPENMA_BASE_URL ?? process.env.ANTHROPIC_BASE_URL ?? "http://127.0.0.1:8080";
 
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is required");
-  if (!envId) throw new Error("ANTHROPIC_ENVIRONMENT_ID is required");
+  if (!apiKey) throw new Error("OPENMA_API_KEY or ANTHROPIC_API_KEY is required");
+  if (!envId) throw new Error("OPENMA_ENVIRONMENT_ID or ANTHROPIC_ENVIRONMENT_ID is required");
 
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({ apiKey, baseURL: baseUrl });
 
   console.log(`[experiment] work-check for env=${envId}`);
 

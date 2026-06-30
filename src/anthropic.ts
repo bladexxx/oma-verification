@@ -1,5 +1,5 @@
 /**
- * Anthropic API client using official SDK.
+ * OpenMA-compatible Anthropic SDK client wrapper.
  *
  * Two clients following the SDK's own pattern (see WorkPoller source):
  * - `client`     → API Key auth for management/session endpoints
@@ -15,12 +15,14 @@ import { log } from "./logger.js";
 const client = new Anthropic({
   apiKey: config.apiKey || undefined,
   authToken: null,
+  baseURL: config.baseUrl,
 });
 
 /** Work client: poll/ack/heartbeat/stop — uses environment key as Bearer. */
 const workClient = new Anthropic({
-  authToken: config.envKey,
-  apiKey: null,
+  authToken: config.envKey || undefined,
+  apiKey: undefined,
+  baseURL: config.baseUrl,
 });
 
 const betas: AnthropicBeta[] = [config.beta as AnthropicBeta];
@@ -39,7 +41,8 @@ function logClientStateOnce(): void {
   const rawMgmt = client as unknown as { apiKey?: string | null; authToken?: string | null; baseURL?: string };
   const rawWork = workClient as unknown as { apiKey?: string | null; authToken?: string | null; baseURL?: string };
 
-  log("info", "system", "Anthropic clients initialized", {
+  log("info", "system", "OpenMA clients initialized", {
+    provider: config.provider,
     management: { apiKey: mask(rawMgmt.apiKey), authToken: mask(rawMgmt.authToken), baseURL: rawMgmt.baseURL },
     work: { apiKey: mask(rawWork.apiKey), authToken: mask(rawWork.authToken), baseURL: rawWork.baseURL },
   });
@@ -107,6 +110,9 @@ export async function createSession(agentId: string, message?: string): Promise<
     agent: agentId,
     environment_id: config.envId,
   });
+
+  const { startSessionSandbox } = await import("./sandbox-manager.js");
+  startSessionSandbox(String(session.id));
 
   if (message) {
     await client.beta.sessions.events.send(session.id, {

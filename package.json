@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --env-file=.env node_modules/.bin/tsx watch src/index.ts",
-    "start": "node --env-file=.env node_modules/.bin/tsx src/index.ts",
-    "exp:list-env": "node --env-file=.env node_modules/.bin/tsx src/experiment-list-env.ts",
-    "exp:work-check": "node --env-file=.env node_modules/.bin/tsx src/experiment-work-check.ts",
+    "dev": "node node_modules/.bin/tsx watch src/index.ts",
+    "start": "node node_modules/.bin/tsx src/index.ts",
+    "exp:list-env": "node node_modules/.bin/tsx src/experiment-list-env.ts",
+    "exp:work-check": "node node_modules/.bin/tsx src/experiment-work-check.ts",
+    "exp:openma-console": "node node_modules/.bin/tsx src/openma-console.ts",
     "build:image": "bash docker/build-image.sh"
   },
   "dependencies": {

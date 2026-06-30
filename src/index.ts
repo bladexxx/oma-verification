@@ -17,7 +17,7 @@ serve({ fetch: app.fetch, port: config.port }, (info) => {
   });
 });
 
-// Start poll loop
+// OpenMA-only mode does not require the CMA-style poll loop.
 startPollLoop();
 
 // Graceful shutdown

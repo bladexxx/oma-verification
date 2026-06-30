@@ -1,14 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 
 async function main(): Promise<void> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENMA_API_KEY ?? process.env.ANTHROPIC_API_KEY;
+  const baseUrl = process.env.OPENMA_BASE_URL ?? process.env.ANTHROPIC_BASE_URL ?? "http://127.0.0.1:8080";
   if (!apiKey) {
-    throw new Error("ANTHROPIC_API_KEY is required");
+    throw new Error("OPENMA_API_KEY or ANTHROPIC_API_KEY is required");
   }
 
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({ apiKey, baseURL: baseUrl });
 
-  console.log("[experiment] listing environments via SDK...");
+  console.log(`[experiment] listing environments via SDK from ${baseUrl}...`);
   let count = 0;
   for await (const env of client.beta.environments.list()) {
     count += 1;
