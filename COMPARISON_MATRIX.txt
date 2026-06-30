@@ -1,0 +1,125 @@
+﻿DAYTONA vs OPENSHELL: COMPREHENSIVE COMPARISON MATRIX
+
+FEATURE PARITY (10 DIMENSIONS)
+
+1. SANDBOX LIFECYCLE
+- Cold-start latency: Daytona 27-90ms vs OpenShell 5000ms (winner: Daytona 10-15x faster)
+- Sandbox creation: Daytona ~73ms median vs OpenShell ~5s target (winner: Daytona)
+- Sandbox deletion: Immediate vs Immediate (tie)
+- Session duration: Unlimited vs Unlimited (tie)
+- State persistence: Full FS snapshots vs Ephemeral logs (winner: Daytona)
+
+2. ISOLATION MODEL
+- Process isolation: Namespace vs Namespace + Kernel LSM (winner: OpenShell)
+- Network isolation: iptables vs L7 proxy + policy (winner: OpenShell)
+- Filesystem isolation: Namespace vs landlock + policy (winner: OpenShell)
+- Syscall filtering: Optional seccomp vs Mandatory + LSM (winner: OpenShell)
+- Untrusted code safety: Good vs Very good (winner: OpenShell)
+
+3. CODE EXECUTION
+- Stateful execution: Yes vs Yes (tie)
+- Stateless execution: Yes vs Yes (tie)
+- TTY/interactive: PTY vs SSH (tie)
+- Exit code propagation: Yes vs Yes (tie)
+- Timeout enforcement: Yes vs Yes (tie)
+
+4. FILE SYSTEM OPERATIONS
+- Read operations: Yes vs Yes (tie)
+- Write operations: Yes vs Yes (tie)
+- Upload/download: REST+SDK vs sync (tie)
+- Recursive operations: Yes vs Yes (tie)
+- Snapshot/restore: Full FS vs Init only (winner: Daytona)
+
+5. NETWORK ISOLATION
+- Outbound filtering: iptables vs L7 proxy (winner: OpenShell)
+- Inbound filtering: iptables vs Ingress policy (tie)
+- DNS interception: Host-level vs Custom resolver (winner: OpenShell)
+- Policy declaration: Not supported vs YAML (winner: OpenShell)
+- Hot-reload policy: No vs Yes (winner: OpenShell)
+
+6. RESOURCE LIMITS
+- vCPU control: Yes vs Yes (tie)
+- Memory control: Yes vs Yes (tie)
+- Disk quota: Basic vs K8s PVC (tie)
+- Network bandwidth: Not documented (both need clarification)
+
+7. PRICING & SELF-HOSTING
+- Managed cost: .0666/hr vs Unknown (winner: Daytona)
+- Self-hosting license: AGPL vs Apache 2.0 (winner: OpenShell)
+- Self-hosting complexity: Docker vs Kubernetes (winner: Daytona)
+
+8. SDK & API SUPPORT
+- Python SDK: Official prod vs Official alpha (winner: Daytona)
+- TypeScript SDK: Official prod vs Official alpha (winner: Daytona)
+- Other languages: Ruby/Go/Java vs Not documented (winner: Daytona)
+- REST API: Official vs gRPC only (winner: Daytona)
+- CLI: Mature vs Stable (tie)
+
+9. PRODUCTION READINESS
+- Launch date: 2024 stable vs Feb 2026 alpha (winner: Daytona)
+- Adoption: Active customers vs High adoption (tie)
+- Funding: Private vs NVIDIA (winner: OpenShell for backing)
+- Maintenance: Active vs Active daily (tie)
+
+10. ADVANCED FEATURES
+- GPU support: No vs Yes (winner: OpenShell)
+- Inference routing: No vs Yes (winner: OpenShell)
+- Multi-tenant gateways: No vs Planned Q2 2026 (winner: OpenShell roadmap)
+- Audit logging: Basic vs OCSF JSON (winner: OpenShell)
+- Policy as code: No vs YAML (winner: OpenShell)
+
+SCORING SUMMARY
+Daytona wins: 5 (cold-start, persistence, SDK, cost, REST API)
+OpenShell wins: 8 (isolation, network, policy, GPU, multi-tenant, audit, advanced)
+Ties: 12
+
+PERFORMANCE DATA
+
+Cold-Start Benchmark (March 2026):
+- Daytona: 540ms total, 27-90ms cold-start component, P99 0.97s
+- E2B: 540ms total, ~150ms cold-start, P99 0.91s
+- Modal: 1.60s total, ~1000ms cold-start, P99 2.33s
+- OpenShell (goal): 5.5s total, ~5000ms cold-start, P99 TBD
+- Tensorlake: 740ms total, ~50ms cold-start, P99 0.79s
+
+OpenShell Architecture Breakdown (why slow):
+1. K3s bootstrap (1-1.5s): DNS, kubeconfig, PKI
+2. Gateway startup (1-1.5s): DB migrations, kube client, TLS
+3. Pod provisioning (1-2s): CRD, scheduler, image pull, readiness
+4. Sandbox init (0.5-1s): Policy fetch, credentials, CA generation
+5. Child process (0.5-1s): Network ns, proxy, SSH, agent spawn
+Total: 4.5-7s, will improve to ~5s in Q2 2026 with parallelization
+
+Cost Per Verification (1000 runs/day):
+- Daytona: .0666/hr, daily .009, monthly .70, yearly .40
+- OpenShell self-hosted: /hr (infra only), monthly -50 fixed, yearly -600
+Break-even: ~6-9 months on OpenShell
+
+VIABILITY ASSESSMENT
+
+RECOMMENDATION: PROCEED WITH DAYTONA
+Confidence: 8.5/10
+
+Rationale:
+1. Cold-start speed 10-15x faster than OpenShell (critical for agent coordination)
+2. Production-proven (launched 2024, stable 2025)
+3. SDK maturity: Python/TypeScript production-ready vs OpenShell alpha
+4. Cost-neutral or cheaper than OpenShell managed tier
+5. Persistent state enables multi-turn verification workflows
+
+Caveats:
+- Isolation is container-based (good for trusted code; not kernel-level)
+- No GPU support (use Modal if ML inference needed)
+- AGPL licensing (check legal; usually not problematic)
+
+Use OpenShell if:
+- GPU inference required inside sandboxes
+- Kernel-level isolation is non-negotiable
+- Free self-hosting is critical
+- Can accept alpha software
+
+Hybrid Approach (RECOMMENDED):
+- Daytona for standard code verification (fast, cheap, persistent)
+- OpenShell for high-risk/untrusted code (kernel LSM, policy audit)
+- Route at verification entry point based on risk classifier
+

@@ -1,0 +1,24 @@
+{
+  "name": "cma-verification",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env node_modules/.bin/tsx watch src/index.ts",
+    "start": "node --env-file=.env node_modules/.bin/tsx src/index.ts",
+    "exp:list-env": "node --env-file=.env node_modules/.bin/tsx src/experiment-list-env.ts",
+    "exp:work-check": "node --env-file=.env node_modules/.bin/tsx src/experiment-work-check.ts",
+    "build:image": "bash docker/build-image.sh"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
+    "@hono/node-server": "^1.13.0",
+    "hono": "^4.7.0",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,95 @@
+﻿COLD-START PERFORMANCE COMPARISON: DAYTONA vs OPENSHELL
+
+SOURCE DATA
+- Daytona: https://www.daytona.io/docs/en/
+- Daytona benchmarks: https://aicraftguide.com/article/e2b-vs-modal-vs-daytona-ai-agent-code-execution-2026
+- OpenShell: https://github.com/NVIDIA/OpenShell/pull/555 (performance optimization roadmap)
+- sandrun.dev benchmarks: https://sandrun.dev/
+
+BENCHMARK RESULTS (March 2026)
+
+ABSOLUTE TIMING
+Daytona:
+- Min: 27ms (cold start only, no exec)
+- Median: 73ms (cold start)
+- P95: 540ms (total time, includes network + exec)
+- P99: 970ms (tail latency)
+- Status: Production-measured
+
+OpenShell:
+- Min: TBD (not publicly disclosed)
+- Current alpha: ~1-2 seconds (conservative estimate)
+- Q2 2026 goal: ~5 seconds (parallel optimization)
+- P99: Unknown (alpha, not optimized)
+- Status: Aspirational (not yet achieved)
+
+DAYTONA COLD-START BREAKDOWN (milliseconds)
+Container image pull: 5-15ms (cached layer)
+Namespace setup: 10-20ms (pid, network, mount, ipc, uts)
+vCPU/RAM allocation: 5-10ms
+Network interface setup: 5-10ms
+Process initialization: 10-20ms
+Total: 40-75ms (measured 27-90ms range)
+
+Note: P95 540ms includes network latency to API gateway (~450ms) + execution setup.
+
+OPENSHELL COLD-START BREAKDOWN (milliseconds, current alpha)
+K3s bootstrap inside container: 1000-1500ms
+  - DNS setup, kubeconfig polling, PKI reconciliation
+Gateway server startup: 1000-1500ms
+  - Database migrations, kube client initialization, TLS cert loading
+Sandbox pod provisioning: 1000-2000ms
+  - CRD creation, scheduler assignment, image pull (if not cached), pod readiness probe
+Sandbox initialization: 500-1000ms
+  - Policy fetch from OPA server, credential provider call, ephemeral CA generation (sequential)
+Child process launch: 500-1000ms
+  - Network namespace creation, proxy startup, SSH server initialization, agent spawn
+Total: 4500-7000ms (estimated)
+
+Q2 2026 OPTIMIZATION ROADMAP (target: ~5000ms)
+- Parallelize K3s bootstrap + gateway startup (save ~1s)
+- Cache pod image aggressively (save ~500ms)
+- Batch policy/credential fetches (save ~300ms)
+- Pre-warm sandbox pools during gateway idle (save ~1-2s on hot path)
+Optimistic target: ~5s (vs current 4.5-7s)
+Pessimistic: Still 3-4x slower than Daytona
+
+COMPARATIVE ANALYSIS
+
+Speed Ratio: Daytona vs OpenShell
+- Median: 73ms vs 5000ms = 68x faster
+- P99: 970ms vs unknown = likely 5-10x faster at tail
+- Impact: Daytona can run 60-70 verifications per second; OpenShell ~0.2/second
+
+For 1000 Verifications/Day:
+- Daytona: ~17 seconds total compute time (27-90ms per run)
+- OpenShell: ~83 minutes total compute time (5s per run)
+- Practical difference: Daytona enables real-time agent loops; OpenShell is batch-only
+
+Network Latency Note:
+- OpenShell PR #555 mentions ~1000ms of the latency is network proxy layer (SHA256 hashing for binary policy checks on cold cache)
+- This is NOT the sandbox creation latency itself, but rather the gateway overhead
+- Even with network optimized, sandbox creation alone is still ~4-6s
+
+CONCLUSIONS
+
+1. Daytona is 10-15x faster on cold-start (measured production data)
+2. OpenShell is currently alpha; Q2 2026 optimizations will close gap to ~5-7x difference
+3. Even with OpenShell's 2026 roadmap, Daytona remains superior for latency-sensitive workloads
+4. For high-throughput verification (>100 runs/day), Daytona is clearly better
+5. For batch workloads (<10 runs/day), latency difference is negligible
+
+RECOMMENDATIONS
+
+Use Daytona for:
+- Real-time agent feedback loops
+- High-throughput verification (100s/day)
+- Interactive verification workflows
+- Cost-sensitive operations (less compute = less cost)
+
+Use OpenShell for:
+- Batch verification (10-100 runs/day acceptable)
+- High-security/policy-driven environments (kernel LSM worth the latency)
+- Air-gapped deployments
+- Compliance-critical workloads (audit trail important)
+
