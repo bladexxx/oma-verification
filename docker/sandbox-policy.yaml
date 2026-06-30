@@ -1,0 +1,41 @@
+version: 1
+
+network_policies:
+  github_api:
+    name: github-api
+    endpoints:
+      - host: api.github.com
+        port: 443
+        path: "/**"
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow:
+              method: GET
+              path: "/**"
+      - host: release-assets.githubusercontent.com
+        port: 443
+        path: "/**"
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow:
+              method: GET
+              path: "/**"
+    binaries:
+      - { path: /usr/bin/curl }
+
+  anthropic_api:
+    name: anthropic-api
+    endpoints:
+      - host: api.anthropic.com
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow:
+              method: "*"
+              path: "/**"
+    binaries:
+      - { path: /usr/local/bin/ant }
+      - { path: /usr/bin/curl }
