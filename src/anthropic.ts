@@ -111,9 +111,6 @@ export async function createSession(agentId: string, message?: string): Promise<
     environment_id: config.envId,
   });
 
-  const { startSessionSandbox } = await import("./sandbox-manager.js");
-  startSessionSandbox(String(session.id));
-
   if (message) {
     await client.beta.sessions.events.send(session.id, {
       events: [{

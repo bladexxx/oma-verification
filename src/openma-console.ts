@@ -16,10 +16,9 @@ async function main(): Promise<void> {
 
   if (!apiKey) throw new Error("OPENMA_API_KEY or ANTHROPIC_API_KEY is required");
   if (!envId) throw new Error("OPENMA_ENVIRONMENT_ID or ANTHROPIC_ENVIRONMENT_ID is required");
-  if (!envKey) throw new Error("OPENMA_ENVIRONMENT_KEY or ANTHROPIC_ENVIRONMENT_KEY is required");
 
   const client = new Anthropic({ apiKey, baseURL: baseUrl });
-  const workClient = new Anthropic({ authToken: envKey, baseURL: baseUrl });
+  const workClient = new Anthropic({ authToken: envKey || undefined, baseURL: baseUrl });
   const beta = "managed-agents-2026-04-01" as const;
 
   console.log(`[openma-console] baseUrl=${baseUrl}`);
