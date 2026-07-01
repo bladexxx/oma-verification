@@ -57,16 +57,21 @@ export function spawnSandboxForSession(sessionId: string, workId: string): strin
   activeSandboxes.add(sandboxName);
   const record = createRecord(sessionId, workId, sandboxName);
 
-  const antCmd = [
+  const antLines: string[] = [
     "set -e",
     "mkdir -p $HOME/workspace",
     `export ANTHROPIC_SESSION_ID="${sessionId}"`,
-    `export ANTHROPIC_ENVIRONMENT_KEY="${config.envKey}"`,
+  ];
+  if (config.envKey && config.envKey.length > 0) {
+    antLines.push(`export ANTHROPIC_ENVIRONMENT_KEY="${config.envKey}"`);
+  }
+  antLines.push(
     `export ANTHROPIC_WORK_ID="${workId}"`,
     `export ANTHROPIC_ENVIRONMENT_ID="${config.envId}"`,
     `export ANTHROPIC_BASE_URL="${config.baseUrl}"`,
     "ant beta:worker run --workdir $HOME/workspace",
-  ].join("; ");
+  );
+  const antCmd = antLines.join("; ");
 
   const args = [
     "sandbox", "create",
@@ -87,6 +92,9 @@ export function spawnSandboxForSession(sessionId: string, workId: string): strin
     ANTHROPIC_ENVIRONMENT_ID: config.envId,
     ANTHROPIC_BASE_URL: config.baseUrl,
   };
+  if (config.envKey && config.envKey.length > 0) {
+    env.ANTHROPIC_ENVIRONMENT_KEY = config.envKey;
+  }
 
   log("info", "spawn", `Spawning ${config.sandboxMode}: ${sandboxName}`, { sessionId, workId, image: config.image, sandboxMode: config.sandboxMode });
 
