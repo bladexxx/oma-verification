@@ -10,12 +10,17 @@ function requiredAny(names: readonly string[]): string {
   return val;
 }
 
+function required(name: string): string {
+  const val = process.env[name];
+  if (!val) throw new Error(`Missing required env var: ${name}`);
+  return val;
+}
+
 export const config = {
   provider: "openma",
-  // OpenMA / Anthropic-compatible worker auth (for poll/ack/heartbeat)
-  // Environment ID is required for OpenMA subprocess mode. The environment key
-  // is optional for local subprocess mode and may be omitted.
-  envId: requiredAny(["OPENMA_ENVIRONMENT_ID", "ANTHROPIC_ENVIRONMENT_ID"]),
+  // OpenMA worker auth (for local subprocess mode):
+  // Environment ID is required for OpenMA; this project is OpenMA-only.
+  envId: required("OPENMA_ENVIRONMENT_ID"),
   envKey: process.env.OPENMA_ENVIRONMENT_KEY ?? process.env.ANTHROPIC_ENVIRONMENT_KEY ?? "",
   // OpenMA / Anthropic-compatible user auth (for session creation, event listing)
   apiKey: process.env.OPENMA_API_KEY ?? process.env.ANTHROPIC_API_KEY ?? "",
